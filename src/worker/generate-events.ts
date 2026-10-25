@@ -6,8 +6,8 @@ import {
 } from './protocol.ts';
 
 const DATASET = {
-  archiveCount: 90_000,
-  timelineCount: 10_000,
+  archiveCount: 90000,
+  timelineCount: 10000,
   archiveDays: 135,
   timelineDays: 45,
   businessDay: {

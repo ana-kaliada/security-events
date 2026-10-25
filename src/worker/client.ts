@@ -1,51 +1,89 @@
-export type WorkerStatus = 'idle' | 'loading' | 'ready' | 'error';
-type WorkerEvent = { type: 'READY' } | { type: 'ERROR'; message: string };
+import type {
+  EventsRequest,
+  EventsResult,
+  WorkerCommand,
+  WorkerResponse,
+} from './protocol.ts';
+import { createPendingRequests } from './pending-requests.ts';
+import {
+  getWorkerStatus,
+  setWorkerStatus,
+  subscribeToWorkerStatus,
+} from './worker-status.ts';
 
 let worker: Worker | null = null;
-let status: WorkerStatus = 'idle';
-const listeners = new Set<() => void>();
+const pendingRequests = createPendingRequests<EventsResult>();
 
-const setStatus = (nextStatus: WorkerStatus) => {
-  status = nextStatus;
-  listeners.forEach((listener) => listener());
-};
-
-const handleError = () => {
+const failWorker = (message: string) => {
   worker?.terminate();
   worker = null;
-  setStatus('error');
+  pendingRequests.rejectAll(new Error(message));
+  setWorkerStatus('error');
+};
+
+const handleWorkerMessage = (event: MessageEvent<WorkerResponse>) => {
+  const response = event.data;
+
+  switch (response.type) {
+    case 'READY':
+      setWorkerStatus('ready');
+      return;
+    case 'ERROR':
+      failWorker(response.message);
+      return;
+    case 'REJECTED':
+      pendingRequests.reject(response.requestId, new Error(response.message));
+      return;
+    case 'GET_EVENTS':
+      pendingRequests.resolve(response.requestId, response.data);
+      return;
+  }
+};
+
+const sendRequest = (command: WorkerCommand): Promise<EventsResult> => {
+  const currentWorker = worker;
+
+  if (!currentWorker || getWorkerStatus() !== 'ready') {
+    return Promise.reject(new Error('Worker is not ready'));
+  }
+
+  const { requestId, promise } = pendingRequests.create();
+
+  try {
+    currentWorker.postMessage({
+      requestId,
+      ...command,
+    });
+  } catch (error) {
+    pendingRequests.reject(
+      requestId,
+      error instanceof Error ? error : new Error('Request failed'),
+    );
+  }
+
+  return promise;
 };
 
 export const startWorker = () => {
   if (worker) return;
 
-  setStatus('loading');
+  setWorkerStatus('loading');
 
   try {
     worker = new Worker(new URL('./worker.ts', import.meta.url), {
       type: 'module',
     });
-
-    worker.onmessage = (event: MessageEvent<WorkerEvent>) => {
-      if (event.data.type === 'READY') {
-        setStatus('ready');
-      } else {
-        handleError();
-      }
-    };
-    worker.onerror = handleError;
-    worker.onmessageerror = handleError;
+    worker.onmessage = handleWorkerMessage;
+    worker.onerror = () => failWorker('Worker execution failed');
+    worker.onmessageerror = () => failWorker('Worker message is invalid');
   } catch {
-    worker = null;
-    setStatus('error');
+    failWorker('Failed to start worker');
   }
 };
 
-export const getWorkerStatus = () => status;
-
-export const subscribeToWorkerStatus = (listener: () => void) => {
-  listeners.add(listener);
-  return () => {
-    listeners.delete(listener);
-  };
+export const getEvents = (request: EventsRequest): Promise<EventsResult> => {
+  return sendRequest({ type: 'GET_EVENTS', ...request });
 };
+
+export { getWorkerStatus, subscribeToWorkerStatus };
+export type { WorkerStatus } from './worker-status.ts';

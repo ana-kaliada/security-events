@@ -64,3 +64,22 @@ ol {
 #root {
   min-height: 100vh;
 }
+
+.events-skeleton {
+  display: grid;
+  gap: 8px;
+}
+
+.events-skeleton__row {
+  height: 32px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #eeeeee 25%, #f7f7f7 50%, #eeeeee 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.2s infinite;
+}
+
+@keyframes skeleton-loading {
+  to {
+    background-position: -200% 0;
+  }
+}
