@@ -3,6 +3,7 @@ import { useState } from 'react';
 import type { ColumnVisibilityOption } from './components/table-column-visibility-menu/table-column-visibility-menu.tsx';
 import { TableHeader } from './components/table-header/table-header.tsx';
 import { TableMessage } from './components/table-message/table-message.tsx';
+import { TablePagination } from './components/table-pagination/table-pagination.tsx';
 import { TableRow } from './components/table-row/table-row.tsx';
 import { TableSkeleton } from './components/table-skeleton/table-skeleton.tsx';
 import type { TableProps } from './table.types.ts';
@@ -20,6 +21,7 @@ export const Table = <Row, ColumnId extends string>({
   sort,
   onSortChange,
   renderRowActions,
+  pagination,
 }: TableProps<Row, ColumnId>) => {
   const [hiddenColumnIds, setHiddenColumnIds] = useState<Set<ColumnId>>(
     () => new Set(),
@@ -49,11 +51,14 @@ export const Table = <Row, ColumnId extends string>({
       return nextColumnIds;
     });
 
-    if (!visible && sort?.columnId === columnId) {
+    if (!visible && sort?.sortBy === columnId) {
       onSortChange?.(undefined);
     }
   };
 
+  const skeletonRowCount = pagination
+    ? Number(pagination.pageSize)
+    : rowCount;
   const statusMessage = errorMessage
     ? `${caption} failed to load: ${errorMessage}`
     : isLoading
@@ -86,7 +91,7 @@ export const Table = <Row, ColumnId extends string>({
                 ...visibleColumns.map((column) => column.id),
                 'controls',
               ]}
-              rowCount={rowCount}
+              rowCount={skeletonRowCount}
             />
           ) : errorMessage ? (
             <TableMessage
@@ -112,6 +117,9 @@ export const Table = <Row, ColumnId extends string>({
           )}
         </BaseTable.Body>
       </BaseTable.Root>
+      {pagination && pagination.total > 0 && (
+        <TablePagination {...pagination} />
+      )}
     </>
   );
 };

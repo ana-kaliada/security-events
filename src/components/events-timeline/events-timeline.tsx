@@ -1,13 +1,19 @@
 import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
-import { Timeline } from '../../../../shared/components/timeline';
+import { Timeline } from '../../shared/components/timeline';
+import {
+  getSeverityLabel,
+  getSiteLabel,
+  getSourceLabel,
+} from '../../shared/libs/event-options.ts';
 import {
   getDatasetRevision,
   getTimelineEvents,
   getWorkerStatus,
   subscribeToDatasetRevision,
   subscribeToWorkerStatus,
-} from '../../../../worker/client/client.ts';
-import type { EventRecord } from '../../../../worker/protocol.ts';
+} from '../../worker/client/client.ts';
+import type { EventRecord } from '../../worker/protocol.ts';
+import { SeverityBadge } from '../severity-badge/severity-badge.tsx';
 import { groupEventsByDay } from './group-events-by-day.ts';
 import styles from './events-timeline.module.css';
 
@@ -18,7 +24,7 @@ const timeFormatter = new Intl.DateTimeFormat('en', {
 const getEventKey = (event: EventRecord) => event.id;
 
 const getEventLabel = (event: EventRecord) =>
-  `${timeFormatter.format(event.occurredAt)}, ${event.title}, ${event.severity}, ${event.source}, ${event.site}`;
+  `${timeFormatter.format(event.occurredAt)}, ${event.title}, ${getSeverityLabel(event.severity)}, ${getSourceLabel(event.source)}, ${getSiteLabel(event.site)}`;
 
 const renderEventTime = (event: EventRecord) => (
   <time
@@ -33,7 +39,10 @@ const renderEvent = (event: EventRecord) => (
   <div className={styles.event}>
     <p className={styles.title}>{event.title}</p>
     <p className={styles.metadata}>
-      {event.severity} · {event.source} · {event.site}
+      <SeverityBadge severity={event.severity} />
+      <span className={styles.details}>
+        {getSourceLabel(event.source)} · {getSiteLabel(event.site)}
+      </span>
     </p>
   </div>
 );

@@ -12,9 +12,18 @@
 }
 
 .metadata {
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-2);
+  min-width: 0;
   color: var(--app-color-text-muted);
   font-size: var(--font-size-1);
-  text-transform: capitalize;
+}
+
+.details {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .time {

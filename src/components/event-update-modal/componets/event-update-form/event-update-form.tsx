@@ -2,14 +2,14 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Text } from '@radix-ui/themes';
 import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { DateField } from '../../../../../shared/components/date-field';
-import { SearchInput } from '../../../../../shared/components/search-input';
-import { SelectField } from '../../../../../shared/components/select-field';
+import { DateField } from '../../../../shared/components/date-field';
+import { SearchInput } from '../../../../shared/components/search-input';
+import { SelectField } from '../../../../shared/components/select-field';
 import {
   severityOptions,
   siteOptions,
   sourceOptions,
-} from '../../../../../shared/libs/event-options.ts';
+} from '../../../../shared/libs/event-options.ts';
 import styles from './event-update-form.module.css';
 import {
   createEventFormValues,

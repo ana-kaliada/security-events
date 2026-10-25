@@ -7,7 +7,7 @@ import {
 import type { EventsRequest, EventsResult } from '../../../worker/protocol.ts';
 
 type EventsQueryState = {
-  request: EventsRequest;
+  requestKey: string;
   data: EventsResult | null;
   error: Error | null;
 };
@@ -20,29 +20,31 @@ export const useEventsQuery = (request: EventsRequest, enabled: boolean) => {
     subscribeToDatasetRevision,
     getDatasetRevision,
   );
+  const requestKey = JSON.stringify(request);
   const [state, setState] = useState<EventsQueryState | null>(null);
 
   useEffect(() => {
     if (!enabled) return;
 
+    const activeRequest = JSON.parse(requestKey) as EventsRequest;
     let isCurrentRequest = true;
 
-    getEvents(request)
+    getEvents(activeRequest)
       .then((data) => {
         if (!isCurrentRequest) return;
-        setState({ request, data, error: null });
+        setState({ requestKey, data, error: null });
       })
       .catch((error: unknown) => {
         if (!isCurrentRequest) return;
-        setState({ request, data: null, error: toError(error) });
+        setState({ requestKey, data: null, error: toError(error) });
       });
 
     return () => {
       isCurrentRequest = false;
     };
-  }, [enabled, request, revision]);
+  }, [enabled, requestKey, revision]);
 
-  const currentState = state?.request === request ? state : null;
+  const currentState = state?.requestKey === requestKey ? state : null;
 
   return {
     data: currentState?.data ?? null,

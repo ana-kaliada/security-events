@@ -27,18 +27,18 @@ export const TableHeader = <Row, ColumnId extends string>({
     <BaseTable.Header>
       <BaseTable.Row>
         {columns.map((column) => {
-          const isSorted = sort?.columnId === column.id;
+          const isSorted = sort?.sortBy === column.id;
           const nextSort = !isSorted
-            ? { columnId: column.id, direction: 'asc' as const }
-            : sort.direction === 'asc'
-              ? { columnId: column.id, direction: 'desc' as const }
+            ? { sortBy: column.id, sortType: 'asc' as const }
+            : sort.sortType === 'asc'
+              ? { sortBy: column.id, sortType: 'desc' as const }
               : undefined;
           const accessibleLabel =
             column.ariaLabel ??
             (typeof column.label === 'string' ? column.label : column.id);
           const sortActionLabel = !isSorted
             ? `Sort ${accessibleLabel} ascending`
-            : sort.direction === 'asc'
+            : sort.sortType === 'asc'
               ? `Sort ${accessibleLabel} descending`
               : `Clear ${accessibleLabel} sorting`;
 
@@ -48,7 +48,7 @@ export const TableHeader = <Row, ColumnId extends string>({
               width={column.width}
               aria-sort={
                 column.sortable && isSorted
-                  ? sort.direction === 'asc'
+                  ? sort.sortType === 'asc'
                     ? 'ascending'
                     : 'descending'
                   : undefined
@@ -59,7 +59,7 @@ export const TableHeader = <Row, ColumnId extends string>({
                   {column.label}
                   <TableSortButton
                     ariaLabel={sortActionLabel}
-                    direction={isSorted ? sort.direction : undefined}
+                    direction={isSorted ? sort.sortType : undefined}
                     onClick={() => onSortChange(nextSort)}
                   />
                 </Flex>

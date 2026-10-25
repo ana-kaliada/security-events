@@ -1,8 +1,8 @@
 import { Button, Flex } from '@radix-ui/themes';
-import { DateField } from '../../../../shared/components/date-field';
-import { SearchInput } from '../../../../shared/components/search-input';
-import { SelectField } from '../../../../shared/components/select-field';
-import { formatLocalDate } from '../../../../shared/utils/format-local-date.ts';
+import { DateField } from '../../shared/components/date-field';
+import { SearchInput } from '../../shared/components/search-input';
+import { SelectField } from '../../shared/components/select-field';
+import { formatLocalDate } from '../../shared/utils/format-local-date.ts';
 import styles from './event-filters.module.css';
 import {
   type EventFiltersProps,

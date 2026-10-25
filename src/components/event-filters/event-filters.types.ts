@@ -1,4 +1,4 @@
-import type { Filters } from '../../../../worker/protocol.ts';
+import type { Filters } from '../../worker/protocol.ts';
 
 export type EventFiltersValue = Omit<Filters, 'title'>;
 
@@ -13,4 +13,4 @@ export {
   severityOptions,
   siteOptions,
   sourceOptions,
-} from '../../../../shared/libs/event-options.ts';
+} from '../../shared/libs/event-options.ts';

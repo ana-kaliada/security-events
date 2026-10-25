@@ -1,4 +1,4 @@
-import { EventsTable } from './components/events-table/events-table.tsx';
+import { EventsTable } from '../../components/events-table/events-table.tsx';
 
 const EventsPage = () => {
   return (

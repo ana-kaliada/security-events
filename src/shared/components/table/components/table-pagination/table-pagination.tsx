@@ -1,18 +1,18 @@
 import { Button, Select, Text } from '@radix-ui/themes';
 import { useId } from 'react';
-import type { PaginationProps } from './pagination.types.ts';
-import styles from './pagination.module.css';
+import type { TablePaginationProps } from './table-pagination.types.ts';
+import styles from './table-pagination.module.css';
 
-export const Pagination = ({
+export const TablePagination = ({
   page,
   pageSize,
   pageSizeOptions,
   total,
   onPageChange,
   onPageSizeChange,
-}: PaginationProps) => {
+}: TablePaginationProps) => {
   const pageSizeId = useId();
-  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const totalPages = Math.max(1, Math.ceil(total / Number(pageSize)));
 
   return (
     <nav aria-label="Table pagination">
@@ -23,12 +23,12 @@ export const Pagination = ({
           </Text>
           <Select.Root
             value={String(pageSize)}
-            onValueChange={(value) => onPageSizeChange(Number(value))}
+            onValueChange={onPageSizeChange}
           >
             <Select.Trigger id={pageSizeId} />
             <Select.Content>
               {pageSizeOptions.map((option) => (
-                <Select.Item key={option} value={String(option)}>
+                <Select.Item key={option} value={option}>
                   {option}
                 </Select.Item>
               ))}

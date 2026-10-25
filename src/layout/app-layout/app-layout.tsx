@@ -1,6 +1,6 @@
 import { Outlet, NavLink } from 'react-router';
 import { routes } from '../../app/router/routes.tsx';
-import { EventUpdateModal } from '../../components/event/event-update-modal/event-update-modal.tsx';
+import { EventUpdateModal } from '../../components/event-update-modal/event-update-modal.tsx';
 import styles from './app-layout.module.css';
 
 export const AppLayout = () => {

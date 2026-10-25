@@ -50,3 +50,8 @@ const toOptions = <Value extends string>(
 export const severityOptions = toOptions(severities, severityLabels);
 export const sourceOptions = toOptions(sources, sourceLabels);
 export const siteOptions = toOptions(sites, siteLabels);
+
+export const getSeverityLabel = (severity: Severity) =>
+  severityLabels[severity];
+export const getSourceLabel = (source: Source) => sourceLabels[source];
+export const getSiteLabel = (site: Site) => siteLabels[site];

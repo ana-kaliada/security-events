@@ -1,10 +1,11 @@
-import type { TableColumn } from '../../../../shared/components/table';
+import type { TableColumn } from '../../shared/components/table';
 import {
-  type EventRecord,
-  pageSizes,
-  type SortBy,
-} from '../../../../worker/protocol.ts';
-import { formatDateTime } from '../../../../shared/utils/format-date-time.ts';
+  getSiteLabel,
+  getSourceLabel,
+} from '../../shared/libs/event-options.ts';
+import { formatDateTime } from '../../shared/utils/format-date-time.ts';
+import type { EventRecord, SortBy } from '../../worker/protocol.ts';
+import { SeverityBadge } from '../severity-badge/severity-badge.tsx';
 
 export const columns: readonly TableColumn<EventRecord, SortBy>[] = [
   {
@@ -23,21 +24,19 @@ export const columns: readonly TableColumn<EventRecord, SortBy>[] = [
   {
     id: 'severity',
     label: 'Severity',
-    renderCell: (event) => event.severity,
+    renderCell: (event) => <SeverityBadge severity={event.severity} />,
     sortable: true,
   },
   {
     id: 'source',
     label: 'Source',
-    renderCell: (event) => event.source,
+    renderCell: (event) => getSourceLabel(event.source),
     sortable: true,
   },
   {
     id: 'site',
     label: 'Site',
-    renderCell: (event) => event.site,
+    renderCell: (event) => getSiteLabel(event.site),
     sortable: true,
   },
 ];
-
-export const pageSizeOptions = pageSizes.map(Number);

@@ -1,4 +1,4 @@
-import { useUrlState } from '../../../shared/hooks/use-url-state';
+import { useUrlState } from '../../../shared/hooks/use-url-state.ts';
 import { formatLocalDate } from '../../../shared/utils/format-local-date.ts';
 import {
   pageSizes,

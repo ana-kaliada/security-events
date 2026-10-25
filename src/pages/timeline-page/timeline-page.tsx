@@ -1,4 +1,4 @@
-import { EventsTimeline } from './components/events-timeline/events-timeline.tsx';
+import { EventsTimeline } from '../../components/events-timeline/events-timeline.tsx';
 
 export const TimelinePage = () => {
   return (

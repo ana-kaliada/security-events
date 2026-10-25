@@ -1,5 +1,5 @@
 import * as yup from 'yup';
-import { formatLocalDate } from '../../../../../shared/utils/format-local-date.ts';
+import { formatLocalDate } from '../../../../shared/utils/format-local-date.ts';
 import {
   severities,
   sites,
@@ -7,7 +7,7 @@ import {
   type Severity,
   type Site,
   type Source,
-} from '../../../../../worker/protocol.ts';
+} from '../../../../worker/protocol.ts';
 
 export type EventFormValues = {
   title: string;
