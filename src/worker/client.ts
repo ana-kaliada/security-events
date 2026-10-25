@@ -1,10 +1,12 @@
 import type {
+  EventInput,
   EventRecord,
   EventsRequest,
   EventsResult,
   WorkerCommand,
   WorkerResponse,
 } from './protocol.ts';
+import { bumpDatasetRevision } from './dataset-revision.ts';
 import { createPendingRequests } from './pending-requests.ts';
 import {
   getWorkerStatus,
@@ -36,9 +38,10 @@ const handleWorkerMessage = (event: MessageEvent<WorkerResponse>) => {
       pendingRequests.reject(response.requestId, new Error(response.message));
       return;
     case 'GET_EVENTS':
-      pendingRequests.resolve(response.requestId, response.data);
-      return;
     case 'GET_TIMELINE_EVENTS':
+    case 'CREATE_EVENT':
+    case 'UPDATE_EVENT':
+    case 'DELETE_EVENT':
       pendingRequests.resolve(response.requestId, response.data);
       return;
   }
@@ -93,5 +96,29 @@ export const getTimelineEvents = (): Promise<EventRecord[]> => {
   return sendRequest<EventRecord[]>({ type: 'GET_TIMELINE_EVENTS' });
 };
 
+const changeDataset = async <Result>(command: WorkerCommand) => {
+  const result = await sendRequest<Result>(command);
+
+  bumpDatasetRevision();
+
+  return result;
+};
+
+export const createEvent = (event: EventInput) => {
+  return changeDataset<EventRecord>({ type: 'CREATE_EVENT', event });
+};
+
+export const updateEvent = (id: string, event: EventInput) => {
+  return changeDataset<EventRecord>({ type: 'UPDATE_EVENT', id, event });
+};
+
+export const deleteEvent = (id: string) => {
+  return changeDataset<{ id: string }>({ type: 'DELETE_EVENT', id });
+};
+
+export {
+  getDatasetRevision,
+  subscribeToDatasetRevision,
+} from './dataset-revision.ts';
 export { getWorkerStatus, subscribeToWorkerStatus };
 export type { WorkerStatus } from './worker-status.ts';

@@ -40,6 +40,14 @@ export type EventRecord = {
   site: Site;
 };
 
+export type EventInput = {
+  title: string;
+  occurredAt: number;
+  severity: Severity;
+  source: Source;
+  site: Site;
+};
+
 export const pageSizes = ['10', '25', '50', '100'] as const;
 export type PageSize = (typeof pageSizes)[number];
 
@@ -79,7 +87,10 @@ export type EventsResult = {
 
 export type WorkerCommand =
   | ({ type: 'GET_EVENTS' } & EventsRequest)
-  | { type: 'GET_TIMELINE_EVENTS' };
+  | { type: 'GET_TIMELINE_EVENTS' }
+  | { type: 'CREATE_EVENT'; event: EventInput }
+  | { type: 'UPDATE_EVENT'; id: string; event: EventInput }
+  | { type: 'DELETE_EVENT'; id: string };
 
 export type WorkerRequest = WorkerCommand & { requestId: number };
 
@@ -92,4 +103,7 @@ export type WorkerResponse =
       type: 'GET_TIMELINE_EVENTS';
       requestId: number;
       data: EventRecord[];
-    };
+    }
+  | { type: 'CREATE_EVENT'; requestId: number; data: EventRecord }
+  | { type: 'UPDATE_EVENT'; requestId: number; data: EventRecord }
+  | { type: 'DELETE_EVENT'; requestId: number; data: { id: string } };

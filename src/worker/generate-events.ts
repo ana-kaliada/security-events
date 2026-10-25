@@ -109,7 +109,7 @@ const TIMELINE_DAY_EVENT_COUNTS = [
   10, 110, 15, 65, 30, 85,
 ] as const;
 
-const timelineDayEventCount = TIMELINE_DAY_EVENT_COUNTS.reduce(
+const timelineDayEventCount = TIMELINE_DAY_EVENT_COUNTS.reduce<number>(
   (total, count) => total + count,
   0,
 );
