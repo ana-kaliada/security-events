@@ -17,6 +17,8 @@ const DATASET = {
   anchorDate: [2026, 9, 23] as const,
 } as const;
 
+export const TIMELINE_EVENT_COUNT = DATASET.timelineCount;
+
 const SCENARIOS = [
   { weight: 18, source: 'door', severity: 'info', title: 'Access granted' },
   { weight: 9, source: 'door', severity: 'info', title: 'Door closed' },

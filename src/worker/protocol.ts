@@ -77,7 +77,9 @@ export type EventsResult = {
   total: number;
 };
 
-export type WorkerCommand = { type: 'GET_EVENTS' } & EventsRequest;
+export type WorkerCommand =
+  | ({ type: 'GET_EVENTS' } & EventsRequest)
+  | { type: 'GET_TIMELINE_EVENTS' };
 
 export type WorkerRequest = WorkerCommand & { requestId: number };
 
@@ -85,4 +87,9 @@ export type WorkerResponse =
   | { type: 'READY' }
   | { type: 'ERROR'; message: string }
   | { type: 'REJECTED'; requestId: number; message: string }
-  | { type: 'GET_EVENTS'; requestId: number; data: EventsResult };
+  | { type: 'GET_EVENTS'; requestId: number; data: EventsResult }
+  | {
+      type: 'GET_TIMELINE_EVENTS';
+      requestId: number;
+      data: EventRecord[];
+    };

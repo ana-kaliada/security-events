@@ -1,4 +1,5 @@
 import type {
+  EventRecord,
   EventsRequest,
   EventsResult,
   WorkerCommand,
@@ -12,7 +13,7 @@ import {
 } from './worker-status.ts';
 
 let worker: Worker | null = null;
-const pendingRequests = createPendingRequests<EventsResult>();
+const pendingRequests = createPendingRequests();
 
 const failWorker = (message: string) => {
   worker?.terminate();
@@ -37,17 +38,20 @@ const handleWorkerMessage = (event: MessageEvent<WorkerResponse>) => {
     case 'GET_EVENTS':
       pendingRequests.resolve(response.requestId, response.data);
       return;
+    case 'GET_TIMELINE_EVENTS':
+      pendingRequests.resolve(response.requestId, response.data);
+      return;
   }
 };
 
-const sendRequest = (command: WorkerCommand): Promise<EventsResult> => {
+const sendRequest = <Result>(command: WorkerCommand): Promise<Result> => {
   const currentWorker = worker;
 
   if (!currentWorker || getWorkerStatus() !== 'ready') {
     return Promise.reject(new Error('Worker is not ready'));
   }
 
-  const { requestId, promise } = pendingRequests.create();
+  const { requestId, promise } = pendingRequests.create<Result>();
 
   try {
     currentWorker.postMessage({
@@ -82,7 +86,11 @@ export const startWorker = () => {
 };
 
 export const getEvents = (request: EventsRequest): Promise<EventsResult> => {
-  return sendRequest({ type: 'GET_EVENTS', ...request });
+  return sendRequest<EventsResult>({ type: 'GET_EVENTS', ...request });
+};
+
+export const getTimelineEvents = (): Promise<EventRecord[]> => {
+  return sendRequest<EventRecord[]>({ type: 'GET_TIMELINE_EVENTS' });
 };
 
 export { getWorkerStatus, subscribeToWorkerStatus };

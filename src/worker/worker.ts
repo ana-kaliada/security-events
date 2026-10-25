@@ -1,8 +1,12 @@
 import type { EventRecord, WorkerRequest, WorkerResponse } from './protocol.ts';
-import { generateEvents } from './generate-events.ts';
+import {
+  generateEvents,
+  TIMELINE_EVENT_COUNT,
+} from './generate-events.ts';
 import { getEvents } from './get-events.ts';
 
 let records: EventRecord[];
+let timelineRecords: EventRecord[];
 
 const post = (message: WorkerResponse) => {
   self.postMessage(message);
@@ -15,6 +19,18 @@ try {
     throw new Error('Failed to generate 100 000 records');
   }
 
+  timelineRecords = records
+    .slice(-TIMELINE_EVENT_COUNT)
+    .sort(
+      (first, second) =>
+        second.occurredAt - first.occurredAt ||
+        first.id.localeCompare(second.id),
+    );
+
+  if (timelineRecords.length !== TIMELINE_EVENT_COUNT) {
+    throw new Error('Failed to prepare timeline events');
+  }
+
   self.addEventListener('message', (event: MessageEvent<WorkerRequest>) => {
     const request = event.data;
 
@@ -25,11 +41,11 @@ try {
           requestId: request.requestId,
           data: getEvents(records, request),
         });
-      default:
-        self.postMessage({
-          type: 'REJECTED',
+      case 'GET_TIMELINE_EVENTS':
+        return self.postMessage({
+          type: request.type,
           requestId: request.requestId,
-          message: `Unsupported command: ${request.type}`,
+          data: timelineRecords,
         });
     }
   });

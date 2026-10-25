@@ -1,11 +1,11 @@
-type PendingRequest<Result> = {
-  resolve: (result: Result) => void;
+type PendingRequest = {
+  resolve: (result: unknown) => void;
   reject: (error: Error) => void;
 };
 
-export const createPendingRequests = <Result>() => {
+export const createPendingRequests = () => {
   let nextRequestId = 0;
-  const requests = new Map<number, PendingRequest<Result>>();
+  const requests = new Map<number, PendingRequest>();
 
   const take = (requestId: number) => {
     const request = requests.get(requestId);
@@ -14,7 +14,7 @@ export const createPendingRequests = <Result>() => {
   };
 
   return {
-    create() {
+    create<Result>() {
       const requestId = ++nextRequestId;
       let resolve!: (result: Result) => void;
       let reject!: (error: Error) => void;
@@ -24,11 +24,14 @@ export const createPendingRequests = <Result>() => {
         reject = rejectPromise;
       });
 
-      requests.set(requestId, { resolve, reject });
+      requests.set(requestId, {
+        resolve: (result) => resolve(result as Result),
+        reject,
+      });
       return { requestId, promise };
     },
 
-    resolve(requestId: number, result: Result) {
+    resolve(requestId: number, result: unknown) {
       take(requestId)?.resolve(result);
     },
 
