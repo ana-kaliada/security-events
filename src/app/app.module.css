@@ -1,0 +1,9 @@
+.theme {
+  min-height: 100vh;
+  color: var(--app-color-text);
+  background:
+    radial-gradient(circle at 15% 0%, rgb(8 145 178 / 14%), transparent 30rem),
+    radial-gradient(circle at 85% 20%, rgb(79 70 229 / 10%), transparent 34rem),
+    var(--app-color-background);
+}
+

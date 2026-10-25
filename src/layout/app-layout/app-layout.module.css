@@ -1,0 +1,62 @@
+.header {
+  position: sticky;
+  z-index: 10;
+  top: 0;
+  min-height: var(--app-header-height);
+  border-bottom: 1px solid var(--app-color-border);
+  background: color-mix(
+    in srgb,
+    var(--app-color-background) 82%,
+    transparent
+  );
+  box-shadow: var(--app-shadow-sm);
+  backdrop-filter: blur(16px);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-2);
+  width: min(100% - 2rem, var(--app-content-width));
+  min-height: var(--app-header-height);
+  margin-inline: auto;
+  padding-right: 8rem;
+}
+
+.link {
+  padding: var(--app-space-2) var(--app-space-4);
+  border-radius: var(--app-radius-pill);
+  color: var(--app-color-text-muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition:
+    color var(--app-duration-fast) var(--app-ease-standard),
+    background-color var(--app-duration-fast) var(--app-ease-standard);
+}
+
+.link:hover {
+  color: var(--app-color-text);
+  background: var(--app-color-surface-hover);
+}
+
+.activeLink {
+  color: var(--app-color-text);
+  background: var(--app-color-primary-soft);
+}
+
+.content {
+  width: min(100% - 2rem, var(--app-content-width));
+  margin-inline: auto;
+  padding-block: var(--app-space-6) var(--app-space-7);
+}
+
+.content main {
+  display: grid;
+  gap: var(--app-space-4);
+}
+
+.content h1 {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+}

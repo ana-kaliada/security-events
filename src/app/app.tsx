@@ -1,28 +1,30 @@
 import Router from './router/router.tsx';
 import { BrowserRouter } from 'react-router-dom';
-import { StrictMode, useEffect, useSyncExternalStore } from 'react';
-import {
-  getWorkerStatus,
-  startWorker,
-  subscribeToWorkerStatus,
-} from '../worker/client.ts';
+import { StrictMode, useEffect } from 'react';
+import { startWorker } from '../worker/client.ts';
+import { Theme } from '@radix-ui/themes';
+import styles from './app.module.css';
 
 function App() {
-  const workerStatus = useSyncExternalStore(
-    subscribeToWorkerStatus,
-    getWorkerStatus,
-  );
-
   useEffect(() => {
     startWorker();
   }, []);
 
   return (
     <StrictMode>
-      <BrowserRouter>
-        <p>Worker status: {workerStatus}</p>
-        <Router />
-      </BrowserRouter>
+      <Theme
+        className={styles.theme}
+        appearance="dark"
+        accentColor="cyan"
+        grayColor="slate"
+        panelBackground="translucent"
+        radius="large"
+        scaling="100%"
+      >
+        <BrowserRouter>
+          <Router />
+        </BrowserRouter>
+      </Theme>
     </StrictMode>
   );
 }
