@@ -41,7 +41,6 @@ const handleWorkerMessage = (event: MessageEvent<WorkerResponse>) => {
     case 'GET_TIMELINE_EVENTS':
     case 'CREATE_EVENT':
     case 'UPDATE_EVENT':
-    case 'DELETE_EVENT':
       pendingRequests.resolve(response.requestId, response.data);
       return;
   }
@@ -110,10 +109,6 @@ export const createEvent = (event: EventInput) => {
 
 export const updateEvent = (id: string, event: EventInput) => {
   return changeDataset<EventRecord>({ type: 'UPDATE_EVENT', id, event });
-};
-
-export const deleteEvent = (id: string) => {
-  return changeDataset<{ id: string }>({ type: 'DELETE_EVENT', id });
 };
 
 export {

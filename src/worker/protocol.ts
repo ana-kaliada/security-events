@@ -89,8 +89,7 @@ export type WorkerCommand =
   | ({ type: 'GET_EVENTS' } & EventsRequest)
   | { type: 'GET_TIMELINE_EVENTS' }
   | { type: 'CREATE_EVENT'; event: EventInput }
-  | { type: 'UPDATE_EVENT'; id: string; event: EventInput }
-  | { type: 'DELETE_EVENT'; id: string };
+  | { type: 'UPDATE_EVENT'; id: string; event: EventInput };
 
 export type WorkerRequest = WorkerCommand & { requestId: number };
 
@@ -105,5 +104,4 @@ export type WorkerResponse =
       data: EventRecord[];
     }
   | { type: 'CREATE_EVENT'; requestId: number; data: EventRecord }
-  | { type: 'UPDATE_EVENT'; requestId: number; data: EventRecord }
-  | { type: 'DELETE_EVENT'; requestId: number; data: { id: string } };
+  | { type: 'UPDATE_EVENT'; requestId: number; data: EventRecord };

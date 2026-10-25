@@ -1,11 +1,7 @@
 import type { EventRecord, WorkerRequest, WorkerResponse } from './protocol.ts';
 import { generateEvents, TIMELINE_EVENT_COUNT } from './generate-events.ts';
 import { getEvents } from './get-events.ts';
-import {
-  createEventRecord,
-  deleteEventRecord,
-  updateEventRecord,
-} from './mutate-events.ts';
+import { createEventRecord, updateEventRecord } from './mutate-events.ts';
 
 let records: EventRecord[];
 let timelineRecords: EventRecord[];
@@ -74,12 +70,6 @@ try {
           type: request.type,
           requestId: request.requestId,
           data: updateEventRecord(records, request.id, request.event),
-        });
-      case 'DELETE_EVENT':
-        return post({
-          type: request.type,
-          requestId: request.requestId,
-          data: deleteEventRecord(records, timelineRecords, request.id),
         });
     }
   });

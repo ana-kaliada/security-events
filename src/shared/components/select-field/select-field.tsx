@@ -22,13 +22,20 @@ export const SelectField = <Value extends string>({
       <Select.Root
         value={value ?? EMPTY_VALUE}
         onValueChange={(nextValue) => {
+          if (nextValue === EMPTY_VALUE) {
+            if (emptyLabel) onChange(undefined);
+            return;
+          }
+
           const option = options.find((item) => item.value === nextValue);
-          onChange(option?.value);
+          if (option) onChange(option.value);
         }}
       >
         <Select.Trigger id={id} />
         <Select.Content>
-          <Select.Item value={EMPTY_VALUE}>{emptyLabel}</Select.Item>
+          {emptyLabel && (
+            <Select.Item value={EMPTY_VALUE}>{emptyLabel}</Select.Item>
+          )}
           {options.map((option) => (
             <Select.Item key={option.value} value={option.value}>
               {option.label}

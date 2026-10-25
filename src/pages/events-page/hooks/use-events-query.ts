@@ -1,5 +1,9 @@
-import { useEffect, useState } from 'react';
-import { getEvents } from '../../../worker/client.ts';
+import { useEffect, useState, useSyncExternalStore } from 'react';
+import {
+  getDatasetRevision,
+  getEvents,
+  subscribeToDatasetRevision,
+} from '../../../worker/client.ts';
 import type { EventsRequest, EventsResult } from '../../../worker/protocol.ts';
 
 type EventsQueryState = {
@@ -12,6 +16,10 @@ const toError = (error: unknown) =>
   error instanceof Error ? error : new Error('Failed to load events');
 
 export const useEventsQuery = (request: EventsRequest, enabled: boolean) => {
+  const revision = useSyncExternalStore(
+    subscribeToDatasetRevision,
+    getDatasetRevision,
+  );
   const [state, setState] = useState<EventsQueryState | null>(null);
 
   useEffect(() => {
@@ -32,7 +40,7 @@ export const useEventsQuery = (request: EventsRequest, enabled: boolean) => {
     return () => {
       isCurrentRequest = false;
     };
-  }, [enabled, request]);
+  }, [enabled, request, revision]);
 
   const currentState = state?.request === request ? state : null;
 

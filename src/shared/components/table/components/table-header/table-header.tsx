@@ -69,7 +69,7 @@ export const TableHeader = <Row, ColumnId extends string>({
             </BaseTable.ColumnHeaderCell>
           );
         })}
-        <BaseTable.ColumnHeaderCell width="48px">
+        <BaseTable.ColumnHeaderCell justify="end" width="96px">
           <TableColumnVisibilityMenu
             columns={visibilityOptions}
             visibleColumnIds={visibleColumnIds}

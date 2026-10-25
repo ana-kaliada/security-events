@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { Timeline } from '../../../../shared/components/timeline';
 import {
+  getDatasetRevision,
   getTimelineEvents,
   getWorkerStatus,
+  subscribeToDatasetRevision,
   subscribeToWorkerStatus,
 } from '../../../../worker/client.ts';
 import type { EventRecord } from '../../../../worker/protocol.ts';
@@ -41,6 +43,10 @@ export const EventsTimeline = () => {
     subscribeToWorkerStatus,
     getWorkerStatus,
   );
+  const revision = useSyncExternalStore(
+    subscribeToDatasetRevision,
+    getDatasetRevision,
+  );
   const [events, setEvents] = useState<EventRecord[] | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>();
 
@@ -66,7 +72,7 @@ export const EventsTimeline = () => {
     return () => {
       isCurrentRequest = false;
     };
-  }, [workerStatus]);
+  }, [revision, workerStatus]);
 
   const groups = useMemo(() => groupEventsByDay(events ?? []), [events]);
   const workerError =

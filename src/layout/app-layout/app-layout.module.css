@@ -13,14 +13,21 @@
   backdrop-filter: blur(16px);
 }
 
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--app-space-3);
+  width: min(100% - 2rem, var(--app-content-width));
+  min-height: var(--app-header-height);
+  margin-inline: auto;
+}
+
 .nav {
   display: flex;
   align-items: center;
   gap: var(--app-space-2);
-  width: min(100% - 2rem, var(--app-content-width));
   min-height: var(--app-header-height);
-  margin-inline: auto;
-  padding-right: 8rem;
 }
 
 .link {

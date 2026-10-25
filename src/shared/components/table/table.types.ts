@@ -28,4 +28,5 @@ export type TableProps<Row, ColumnId extends string = string> = {
   errorMessage?: string;
   sort?: TableSort<ColumnId>;
   onSortChange?: (sort?: TableSort<ColumnId>) => void;
+  renderRowActions?: (row: Row) => ReactNode;
 };

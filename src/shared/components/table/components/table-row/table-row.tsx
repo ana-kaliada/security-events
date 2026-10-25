@@ -1,13 +1,19 @@
 import { Table as BaseTable } from '@radix-ui/themes';
+import type { ReactNode } from 'react';
 import type { TableColumn } from '../../table.types.ts';
 import styles from './table-row.module.css';
 
 type TableRowProps<Row> = {
   columns: readonly TableColumn<Row>[];
   row: Row;
+  renderActions?: (row: Row) => ReactNode;
 };
 
-export const TableRow = <Row,>({ columns, row }: TableRowProps<Row>) => {
+export const TableRow = <Row,>({
+  columns,
+  row,
+  renderActions,
+}: TableRowProps<Row>) => {
   return (
     <BaseTable.Row>
       {columns.map((column) => {
@@ -23,7 +29,7 @@ export const TableRow = <Row,>({ columns, row }: TableRowProps<Row>) => {
           </BaseTable.Cell>
         );
       })}
-      <BaseTable.Cell />
+      <BaseTable.Cell justify="end">{renderActions?.(row)}</BaseTable.Cell>
     </BaseTable.Row>
   );
 };

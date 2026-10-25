@@ -1,4 +1,5 @@
 import { useMemo, useSyncExternalStore } from 'react';
+import { EventUpdateModal } from '../../../../components/event/event-update-modal/event-update-modal.tsx';
 import {
   getWorkerStatus,
   subscribeToWorkerStatus,
@@ -152,6 +153,18 @@ export const EventsTable = () => {
             : undefined
         }
         onSortChange={handleSortChange}
+        renderRowActions={(event) => (
+          <EventUpdateModal
+            event={event}
+            buttonProps={{
+              size: '1',
+              variant: 'soft',
+              'aria-label': `Edit ${event.title}`,
+            }}
+          >
+            Edit
+          </EventUpdateModal>
+        )}
       />
       {data && data.total > 0 && (
         <Pagination

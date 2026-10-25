@@ -1,5 +1,5 @@
-import { Button, Flex, Text, TextField } from '@radix-ui/themes';
-import { useId } from 'react';
+import { Button, Flex } from '@radix-ui/themes';
+import { DateField } from '../../../../shared/components/date-field';
 import { SearchInput } from '../../../../shared/components/search-input';
 import { SelectField } from '../../../../shared/components/select-field';
 import { formatLocalDate } from '../../../../shared/utils/format-local-date.ts';
@@ -17,7 +17,6 @@ export const EventFilters = ({
   onTitleChange,
   onChange,
 }: EventFiltersProps) => {
-  const dateId = useId();
   const hasActiveFilters = Object.values(value).some(
     (filterValue) => filterValue !== undefined,
   );
@@ -26,7 +25,8 @@ export const EventFilters = ({
     <Flex align="end" gap="3" wrap="wrap">
       <div className={styles.search}>
         <SearchInput
-          accessibleLabel="Search events by title"
+          label="Title"
+          type="search"
           placeholder="Search by title"
           value={title}
           onChange={onTitleChange}
@@ -57,28 +57,22 @@ export const EventFilters = ({
         onChange={(site) => onChange({ ...value, site })}
       />
 
-      <div className={styles.field}>
-        <Text as="label" htmlFor={dateId} size="2">
-          Occurred on
-        </Text>
-        <TextField.Root
-          id={dateId}
-          type="date"
-          value={
-            value.occurredAt === undefined
-              ? ''
-              : formatLocalDate(value.occurredAt)
-          }
-          onChange={(event) =>
-            onChange({
-              ...value,
-              occurredAt: event.target.value
-                ? new Date(`${event.target.value}T00:00:00`).getTime()
-                : undefined,
-            })
-          }
-        />
-      </div>
+      <DateField
+        label="Occurred on"
+        value={
+          value.occurredAt === undefined
+            ? ''
+            : formatLocalDate(value.occurredAt)
+        }
+        onChange={(occurredAt) =>
+          onChange({
+            ...value,
+            occurredAt: occurredAt
+              ? new Date(`${occurredAt}T00:00:00`).getTime()
+              : undefined,
+          })
+        }
+      />
 
       <Button
         type="button"

@@ -19,6 +19,7 @@ export const Table = <Row, ColumnId extends string>({
   errorMessage,
   sort,
   onSortChange,
+  renderRowActions,
 }: TableProps<Row, ColumnId>) => {
   const [hiddenColumnIds, setHiddenColumnIds] = useState<Set<ColumnId>>(
     () => new Set(),
@@ -79,33 +80,36 @@ export const Table = <Row, ColumnId extends string>({
         />
 
         <BaseTable.Body>
-          {isLoading
-            ? <TableSkeleton
-                columnIds={[
-                  ...visibleColumns.map((column) => column.id),
-                  'controls',
-                ]}
-                rowCount={rowCount}
+          {isLoading ? (
+            <TableSkeleton
+              columnIds={[
+                ...visibleColumns.map((column) => column.id),
+                'controls',
+              ]}
+              rowCount={rowCount}
+            />
+          ) : errorMessage ? (
+            <TableMessage
+              columnCount={visibleColumns.length + 1}
+              message={errorMessage}
+              type="error"
+            />
+          ) : data.length === 0 ? (
+            <TableMessage
+              columnCount={visibleColumns.length + 1}
+              message={emptyMessage}
+              type="empty"
+            />
+          ) : (
+            data.map((row) => (
+              <TableRow
+                columns={visibleColumns}
+                key={getRowKey(row)}
+                renderActions={renderRowActions}
+                row={row}
               />
-            : errorMessage
-              ? <TableMessage
-                  columnCount={visibleColumns.length + 1}
-                  message={errorMessage}
-                  type="error"
-                />
-              : data.length === 0
-                ? <TableMessage
-                    columnCount={visibleColumns.length + 1}
-                    message={emptyMessage}
-                    type="empty"
-                  />
-                : data.map((row) => (
-                    <TableRow
-                      columns={visibleColumns}
-                      key={getRowKey(row)}
-                      row={row}
-                    />
-                  ))}
+            ))
+          )}
         </BaseTable.Body>
       </BaseTable.Root>
     </>
