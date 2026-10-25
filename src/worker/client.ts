@@ -1,5 +1,5 @@
 export type WorkerStatus = 'idle' | 'loading' | 'ready' | 'error';
-type EventType = 'READY';
+type WorkerEvent = { type: 'READY' } | { type: 'ERROR'; message: string };
 
 let worker: Worker | null = null;
 let status: WorkerStatus = 'idle';
@@ -26,8 +26,12 @@ export const startWorker = () => {
       type: 'module',
     });
 
-    worker.onmessage = (event: MessageEvent<{ type: EventType }>) => {
-      if (event.data.type === 'READY') setStatus('ready');
+    worker.onmessage = (event: MessageEvent<WorkerEvent>) => {
+      if (event.data.type === 'READY') {
+        setStatus('ready');
+      } else {
+        handleError();
+      }
     };
     worker.onerror = handleError;
     worker.onmessageerror = handleError;
