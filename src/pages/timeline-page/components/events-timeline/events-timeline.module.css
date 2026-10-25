@@ -1,0 +1,22 @@
+.event {
+  display: grid;
+  gap: var(--app-space-1);
+}
+
+.title {
+  overflow: hidden;
+  color: var(--app-color-text);
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.metadata {
+  color: var(--app-color-text-muted);
+  font-size: var(--font-size-1);
+  text-transform: capitalize;
+}
+
+.time {
+  color: inherit;
+}

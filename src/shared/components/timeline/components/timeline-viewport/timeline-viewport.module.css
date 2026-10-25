@@ -1,0 +1,17 @@
+.viewport {
+  position: relative;
+  height: min(70vh, 48rem);
+  overflow: auto;
+}
+
+.content {
+  position: relative;
+  width: 100%;
+}
+
+.row {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
