@@ -1,0 +1,4 @@
+.cell {
+  padding-block: var(--app-space-6);
+  text-align: center;
+}
