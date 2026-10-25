@@ -1,55 +1,45 @@
-import type { EventRecord, WorkerRequest, WorkerResponse } from './protocol.ts';
-import { generateEvents, TIMELINE_EVENT_COUNT } from './generate-events.ts';
+import type { EventRecord, WorkerRequest, WorkerResponse } from '../protocol.ts';
+import {
+  createEventId,
+  EVENT_COUNT,
+  generateEvents,
+  TIMELINE_EVENT_COUNT,
+} from './generate-events.ts';
 import { getEvents } from './get-events.ts';
 import { createEventRecord, updateEventRecord } from './mutate-events.ts';
 
 let records: EventRecord[];
 let timelineRecords: EventRecord[];
-let nextCustomEventNumber = 1;
 
 const post = (message: WorkerResponse) => {
   self.postMessage(message);
 };
 
-const nextCustomEventId = () => {
-  const id = `evt-custom-${nextCustomEventNumber.toString().padStart(6, '0')}`;
-
-  nextCustomEventNumber += 1;
-
-  return id;
-};
-
 try {
   records = generateEvents();
 
-  if (records.length !== 100000) {
-    throw new Error('Failed to generate 100 000 records');
+  if (records.length !== EVENT_COUNT) {
+    throw new Error(`Failed to generate ${EVENT_COUNT} records`);
   }
 
   timelineRecords = records.slice(-TIMELINE_EVENT_COUNT);
-
-  if (timelineRecords.length !== TIMELINE_EVENT_COUNT) {
-    throw new Error('Failed to prepare timeline events');
-  }
 
   self.addEventListener('message', (event: MessageEvent<WorkerRequest>) => {
     const request = event.data;
 
     switch (request.type) {
       case 'GET_EVENTS':
-        return self.postMessage({
+        return post({
           type: request.type,
           requestId: request.requestId,
           data: getEvents(records, request),
         });
       case 'GET_TIMELINE_EVENTS':
         timelineRecords.sort(
-          (first, second) =>
-            second.occurredAt - first.occurredAt ||
-            first.id.localeCompare(second.id),
+          (first, second) => second.occurredAt - first.occurredAt,
         );
 
-        return self.postMessage({
+        return post({
           type: request.type,
           requestId: request.requestId,
           data: timelineRecords,
@@ -62,7 +52,7 @@ try {
             records,
             timelineRecords,
             request.event,
-            nextCustomEventId(),
+            createEventId(),
           ),
         });
       case 'UPDATE_EVENT':

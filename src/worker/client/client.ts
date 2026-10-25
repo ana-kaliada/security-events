@@ -5,7 +5,7 @@ import type {
   EventsResult,
   WorkerCommand,
   WorkerResponse,
-} from './protocol.ts';
+} from '../protocol.ts';
 import { bumpDatasetRevision } from './dataset-revision.ts';
 import { createPendingRequests } from './pending-requests.ts';
 import {
@@ -33,9 +33,6 @@ const handleWorkerMessage = (event: MessageEvent<WorkerResponse>) => {
       return;
     case 'ERROR':
       failWorker(response.message);
-      return;
-    case 'REJECTED':
-      pendingRequests.reject(response.requestId, new Error(response.message));
       return;
     case 'GET_EVENTS':
     case 'GET_TIMELINE_EVENTS':
@@ -76,7 +73,7 @@ export const startWorker = () => {
   setWorkerStatus('loading');
 
   try {
-    worker = new Worker(new URL('./worker.ts', import.meta.url), {
+    worker = new Worker(new URL('../runtime/worker.ts', import.meta.url), {
       type: 'module',
     });
     worker.onmessage = handleWorkerMessage;

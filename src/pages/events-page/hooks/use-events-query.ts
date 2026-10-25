@@ -3,7 +3,7 @@ import {
   getDatasetRevision,
   getEvents,
   subscribeToDatasetRevision,
-} from '../../../worker/client.ts';
+} from '../../../worker/client/client.ts';
 import type { EventsRequest, EventsResult } from '../../../worker/protocol.ts';
 
 type EventsQueryState = {

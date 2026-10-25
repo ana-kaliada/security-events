@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import type { UseFormSetError } from 'react-hook-form';
-import { createEvent, updateEvent } from '../../../../worker/client.ts';
+import { createEvent, updateEvent } from '../../../../worker/client/client.ts';
 import type { EventRecord } from '../../../../worker/protocol.ts';
 import {
   toOccurredAt,

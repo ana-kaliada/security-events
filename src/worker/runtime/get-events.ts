@@ -5,7 +5,7 @@ import type {
   Filters,
   Severity,
   Sort,
-} from './protocol.ts';
+} from '../protocol.ts';
 
 const severityOrder: Record<Severity, number> = {
   info: 0,

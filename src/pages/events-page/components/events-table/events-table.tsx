@@ -3,7 +3,7 @@ import { EventUpdateModal } from '../../../../components/event/event-update-moda
 import {
   getWorkerStatus,
   subscribeToWorkerStatus,
-} from '../../../../worker/client.ts';
+} from '../../../../worker/client/client.ts';
 import {
   pageSizes,
   type EventsRequest,

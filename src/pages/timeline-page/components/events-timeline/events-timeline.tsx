@@ -6,7 +6,7 @@ import {
   getWorkerStatus,
   subscribeToDatasetRevision,
   subscribeToWorkerStatus,
-} from '../../../../worker/client.ts';
+} from '../../../../worker/client/client.ts';
 import type { EventRecord } from '../../../../worker/protocol.ts';
 import { groupEventsByDay } from './group-events-by-day.ts';
 import styles from './events-timeline.module.css';

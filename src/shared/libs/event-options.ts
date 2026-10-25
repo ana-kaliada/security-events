@@ -5,7 +5,7 @@ import {
   type Site,
   sources,
   type Source,
-} from '../worker/protocol.ts';
+} from '../../worker/protocol.ts';
 
 const severityLabels: Record<Severity, string> = {
   info: 'Info',
@@ -24,22 +24,22 @@ const sourceLabels: Record<Source, string> = {
 };
 
 const siteLabels: Record<Site, string> = {
-  'North lobby': 'North lobby',
-  'South lobby': 'South lobby',
-  'Gate A': 'Gate A',
-  'Gate B': 'Gate B',
-  'Loading dock': 'Loading dock',
-  'Parking garage B1': 'Parking garage B1',
-  'Server room': 'Server room',
-  Warehouse: 'Warehouse',
-  Reception: 'Reception',
-  'Perimeter east': 'Perimeter east',
-  'Perimeter west': 'Perimeter west',
-  Roof: 'Roof',
-  Cafeteria: 'Cafeteria',
-  'Mail room': 'Mail room',
-  'Lab 2': 'Lab 2',
-  'Stairwell C': 'Stairwell C',
+  'north-lobby': 'North lobby',
+  'south-lobby': 'South lobby',
+  'gate-a': 'Gate A',
+  'gate-b': 'Gate B',
+  'loading-dock': 'Loading dock',
+  'parking-garage-b1': 'Parking garage B1',
+  'server-room': 'Server room',
+  warehouse: 'Warehouse',
+  reception: 'Reception',
+  'perimeter-east': 'Perimeter east',
+  'perimeter-west': 'Perimeter west',
+  roof: 'Roof',
+  cafeteria: 'Cafeteria',
+  'mail-room': 'Mail room',
+  'lab-2': 'Lab 2',
+  'stairwell-c': 'Stairwell C',
 };
 
 const toOptions = <Value extends string>(

@@ -13,4 +13,4 @@ export {
   severityOptions,
   siteOptions,
   sourceOptions,
-} from '../../../../shared/event-options.ts';
+} from '../../../../shared/libs/event-options.ts';

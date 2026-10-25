@@ -9,7 +9,7 @@ import {
   severityOptions,
   siteOptions,
   sourceOptions,
-} from '../../../../../shared/event-options.ts';
+} from '../../../../../shared/libs/event-options.ts';
 import styles from './event-update-form.module.css';
 import {
   createEventFormValues,

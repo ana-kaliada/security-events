@@ -3,7 +3,7 @@ import {
   type EventRecord,
   type Severity,
   type Source,
-} from './protocol.ts';
+} from '../protocol.ts';
 
 const DATASET = {
   archiveCount: 90000,
@@ -18,6 +18,8 @@ const DATASET = {
 } as const;
 
 export const TIMELINE_EVENT_COUNT = DATASET.timelineCount;
+
+export const createEventId = () => crypto.randomUUID();
 
 const SCENARIOS = [
   { weight: 18, source: 'door', severity: 'info', title: 'Access granted' },
@@ -121,7 +123,7 @@ if (
   throw new Error('Timeline day distribution must cover every timeline event');
 }
 
-const EVENT_COUNT = DATASET.archiveCount + DATASET.timelineCount;
+export const EVENT_COUNT = DATASET.archiveCount + DATASET.timelineCount;
 const MINUTES_IN_DAY = 24 * 60;
 const BUSINESS_MINUTES =
   (DATASET.businessDay.endHour - DATASET.businessDay.startHour) * 60;
@@ -189,7 +191,7 @@ const generateEvent = (index: number): EventRecord => {
     .padStart(4, '0');
 
   return {
-    id: `evt-${index.toString().padStart(6, '0')}`,
+    id: createEventId(),
     title: `${scenario.title} · ${code}`,
     occurredAt: getOccurredAt(index),
     severity: scenario.severity,

@@ -12,22 +12,22 @@ export const sources = [
 export type Source = (typeof sources)[number];
 
 export const sites = [
-  'North lobby',
-  'South lobby',
-  'Gate A',
-  'Gate B',
-  'Loading dock',
-  'Parking garage B1',
-  'Server room',
-  'Warehouse',
-  'Reception',
-  'Perimeter east',
-  'Perimeter west',
-  'Roof',
-  'Cafeteria',
-  'Mail room',
-  'Lab 2',
-  'Stairwell C',
+  'north-lobby',
+  'south-lobby',
+  'gate-a',
+  'gate-b',
+  'loading-dock',
+  'parking-garage-b1',
+  'server-room',
+  'warehouse',
+  'reception',
+  'perimeter-east',
+  'perimeter-west',
+  'roof',
+  'cafeteria',
+  'mail-room',
+  'lab-2',
+  'stairwell-c',
 ] as const;
 export type Site = (typeof sites)[number];
 
@@ -96,7 +96,6 @@ export type WorkerRequest = WorkerCommand & { requestId: number };
 export type WorkerResponse =
   | { type: 'READY' }
   | { type: 'ERROR'; message: string }
-  | { type: 'REJECTED'; requestId: number; message: string }
   | { type: 'GET_EVENTS'; requestId: number; data: EventsResult }
   | {
       type: 'GET_TIMELINE_EVENTS';

@@ -1,4 +1,4 @@
-import type { EventInput, EventRecord } from './protocol.ts';
+import type { EventInput, EventRecord } from '../protocol.ts';
 
 export const createEventRecord = (
   records: EventRecord[],

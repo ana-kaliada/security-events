@@ -1,7 +1,7 @@
 import Router from './router/router.tsx';
 import { BrowserRouter } from 'react-router-dom';
 import { StrictMode, useEffect } from 'react';
-import { startWorker } from '../worker/client.ts';
+import { startWorker } from '../worker/client/client.ts';
 import { Theme } from '@radix-ui/themes';
 import styles from './app.module.css';
 
