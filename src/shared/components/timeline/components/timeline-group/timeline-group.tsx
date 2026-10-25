@@ -23,7 +23,12 @@ export const TimelineGroup = ({
   };
 
   return (
-    <details className={styles.card} open={isOpen} onToggle={handleToggle}>
+    <details
+      className={styles.card}
+      data-focus-target=""
+      open={isOpen}
+      onToggle={handleToggle}
+    >
       <summary
         className={styles.summary}
         tabIndex={-1}

@@ -13,6 +13,11 @@
   cursor: pointer;
 }
 
+.summary:focus,
+.summary:focus-visible {
+  outline: none;
+}
+
 .label {
   flex: 1;
   margin: 0;

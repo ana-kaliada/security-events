@@ -24,7 +24,9 @@ export const TimelineRow = <Item,>({
       <span className={styles.separator}>
         <span className={styles.marker} />
       </span>
-      <div className={styles.itemContent}>{renderItem(item)}</div>
+      <div className={styles.itemContent} data-focus-target="">
+        {renderItem(item)}
+      </div>
     </article>
   );
 };

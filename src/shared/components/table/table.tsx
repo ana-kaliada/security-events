@@ -50,10 +50,6 @@ export const Table = <Row, ColumnId extends string>({
 
       return nextColumnIds;
     });
-
-    if (!visible && sort?.sortBy === columnId) {
-      onSortChange?.(undefined);
-    }
   };
 
   const skeletonRowCount = pagination
@@ -117,7 +113,7 @@ export const Table = <Row, ColumnId extends string>({
           )}
         </BaseTable.Body>
       </BaseTable.Root>
-      {pagination && pagination.total > 0 && (
+      {pagination && (isLoading || pagination.total > 0) && (
         <TablePagination {...pagination} />
       )}
     </>

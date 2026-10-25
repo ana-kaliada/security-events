@@ -1,4 +1,4 @@
-import type { EventRecord } from '../../../../worker/protocol.ts';
+import type { EventRecord } from '../../worker/protocol.ts';
 
 export type EventFormProps = {
   event: EventRecord | null;

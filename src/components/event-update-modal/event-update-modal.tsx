@@ -1,7 +1,7 @@
 import { Button, Dialog, type ButtonProps } from '@radix-ui/themes';
 import { useId, useState, type ReactNode } from 'react';
 import type { EventRecord } from '../../worker/protocol.ts';
-import { EventUpdateForm } from './componets/event-update-form/event-update-form.tsx';
+import { EventUpdateForm } from '../event-update-form/event-update-form.tsx';
 import styles from './event-update-modal.module.css';
 
 type EventFormDialogProps = {

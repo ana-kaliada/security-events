@@ -5,7 +5,7 @@ import type { EventRecord } from '../../../worker/protocol.ts';
 import {
   toOccurredAt,
   type EventFormValues,
-} from '../componets/event-update-form/event-update-form.schema.ts';
+} from '../../event-update-form/event-update-form.schema.ts';
 
 type UseEventFormSubmitParams = {
   event: EventRecord | null;

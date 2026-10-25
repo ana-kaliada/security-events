@@ -1,5 +1,12 @@
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import type { KeyboardEvent } from 'react';
 import { TimelineGroup } from './components/timeline-group/timeline-group.tsx';
 import { TimelineMessage } from './components/timeline-message/timeline-message.tsx';
@@ -13,6 +20,10 @@ import {
   isTimelineKey,
   resolveTimelineCursor,
 } from './timeline-navigation.ts';
+import {
+  getInputModality,
+  startInputModalityTracking,
+} from './timeline-input-modality.ts';
 import type { TimelineCursor, TimelineProps } from './timeline.types.ts';
 
 const GROUP_HEADER_HEIGHT = 64;
@@ -34,6 +45,9 @@ export const Timeline = <Item,>({
   const [cursor, setCursor] = useState<TimelineCursor | null>(null);
   const [expandedGroupId, setExpandedGroupId] = useState<string | null>(null);
   const [announcement, setAnnouncement] = useState('');
+  const [keyboardFocus, setKeyboardFocus] = useState(false);
+
+  useEffect(() => startInputModalityTracking(), []);
   const resolvedCursor = useMemo(
     () => resolveTimelineCursor(groups, cursor, expandedGroupId),
     [cursor, expandedGroupId, groups],
@@ -86,6 +100,8 @@ export const Timeline = <Item,>({
   }, []);
 
   const handleViewportFocus = useCallback(() => {
+    setKeyboardFocus(getInputModality() === 'keyboard');
+
     if (skipFocusAnnouncementRef.current) {
       skipFocusAnnouncementRef.current = false;
       return;
@@ -101,6 +117,7 @@ export const Timeline = <Item,>({
       if (!resolvedCursor || !isTimelineKey(event.key)) return;
 
       event.preventDefault();
+      setKeyboardFocus(true);
 
       const navigation = getTimelineNavigation(
         groups,
@@ -117,6 +134,14 @@ export const Timeline = <Item,>({
     },
     [announce, expandedGroupId, groups, resolvedCursor],
   );
+
+  const handleViewportBlur = useCallback(() => {
+    setKeyboardFocus(false);
+  }, []);
+
+  const handleViewportPointerDown = useCallback(() => {
+    setKeyboardFocus(false);
+  }, []);
 
   // TanStack Virtual intentionally exposes mutable measurement methods.
   // eslint-disable-next-line react-hooks/incompatible-library
@@ -163,9 +188,12 @@ export const Timeline = <Item,>({
       items={virtualizer.getVirtualItems()}
       measureElement={virtualizer.measureElement}
       totalSize={virtualizer.getTotalSize()}
+      keyboardFocus={keyboardFocus}
       viewportRef={viewportRef}
+      onBlur={handleViewportBlur}
       onFocus={handleViewportFocus}
       onKeyDown={handleViewportKeyDown}
+      onPointerDown={handleViewportPointerDown}
     >
       {(virtualRow) => {
         const row = rows[virtualRow.index];

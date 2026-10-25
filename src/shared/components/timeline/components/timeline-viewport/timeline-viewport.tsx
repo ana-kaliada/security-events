@@ -7,19 +7,25 @@ export const TimelineViewport = ({
   announcement,
   measureElement,
   totalSize,
+  keyboardFocus,
   viewportRef,
   onKeyDown,
   onFocus,
+  onBlur,
+  onPointerDown,
   children,
 }: TimelineViewportProps) => {
   return (
     <div
       aria-label="Event timeline"
       className={styles.viewport}
+      data-keyboard-focus={keyboardFocus ? 'true' : undefined}
       ref={viewportRef}
       tabIndex={0}
+      onBlur={onBlur}
       onFocus={onFocus}
       onKeyDown={onKeyDown}
+      onPointerDown={onPointerDown}
     >
       <span className={styles.visuallyHidden} role="status">
         {announcement}

@@ -1,20 +1,15 @@
-import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
+import { useMemo } from 'react';
 import { Timeline } from '../../shared/components/timeline';
 import {
   getSeverityLabel,
   getSiteLabel,
   getSourceLabel,
 } from '../../shared/libs/event-options.ts';
-import {
-  getDatasetRevision,
-  getTimelineEvents,
-  getWorkerStatus,
-  subscribeToDatasetRevision,
-  subscribeToWorkerStatus,
-} from '../../worker/client/client.ts';
+import { useWorkerStatus } from '../../shared/hooks/use-worker-status.ts';
 import type { EventRecord } from '../../worker/protocol.ts';
 import { SeverityBadge } from '../severity-badge/severity-badge.tsx';
-import { groupEventsByDay } from './group-events-by-day.ts';
+import { groupEventsByDay } from './utils/group-events-by-day.ts';
+import { useTimelineQuery } from './hooks/use-timeline-query.ts';
 import styles from './events-timeline.module.css';
 
 const timeFormatter = new Intl.DateTimeFormat('en', {
@@ -48,41 +43,8 @@ const renderEvent = (event: EventRecord) => (
 );
 
 export const EventsTimeline = () => {
-  const workerStatus = useSyncExternalStore(
-    subscribeToWorkerStatus,
-    getWorkerStatus,
-  );
-  const revision = useSyncExternalStore(
-    subscribeToDatasetRevision,
-    getDatasetRevision,
-  );
-  const [events, setEvents] = useState<EventRecord[] | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string>();
-
-  useEffect(() => {
-    if (workerStatus !== 'ready') return;
-
-    let isCurrentRequest = true;
-
-    getTimelineEvents()
-      .then((result) => {
-        if (!isCurrentRequest) return;
-        setEvents(result);
-      })
-      .catch((error: unknown) => {
-        if (!isCurrentRequest) return;
-        setErrorMessage(
-          error instanceof Error
-            ? error.message
-            : 'Failed to load timeline events',
-        );
-      });
-
-    return () => {
-      isCurrentRequest = false;
-    };
-  }, [revision, workerStatus]);
-
+  const { status: workerStatus, isReady: isWorkerReady } = useWorkerStatus();
+  const { data: events, error, isLoading } = useTimelineQuery(isWorkerReady);
   const groups = useMemo(() => groupEventsByDay(events ?? []), [events]);
   const workerError =
     workerStatus === 'error' ? 'Worker failed to initialize' : undefined;
@@ -94,9 +56,9 @@ export const EventsTimeline = () => {
       getItemLabel={getEventLabel}
       renderItem={renderEvent}
       renderOppositeContent={renderEventTime}
-      isLoading={!workerError && !events && !errorMessage}
+      isLoading={!workerError && isLoading}
       emptyMessage="No timeline events"
-      errorMessage={workerError ?? errorMessage}
+      errorMessage={workerError ?? error?.message}
     />
   );
 };

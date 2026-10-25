@@ -1,6 +1,6 @@
-import type { TimelineGroup } from '../../shared/components/timeline';
-import { formatLocalDate } from '../../shared/utils/format-local-date.ts';
-import type { EventRecord } from '../../worker/protocol.ts';
+import type { TimelineGroup } from '../../../shared/components/timeline';
+import { formatLocalDate } from '../../../shared/utils/format-local-date.ts';
+import type { EventRecord } from '../../../worker/protocol.ts';
 
 const dateFormatter = new Intl.DateTimeFormat('en', {
   dateStyle: 'full',
@@ -51,11 +51,10 @@ export const groupEventsByDay = (
     }
 
     if (previousEventDayId) {
-      let gapDayId = previousDayId(previousEventDayId);
+      const missingDayId = previousDayId(previousEventDayId);
 
-      while (dayTimestamp(gapDayId) > dayTimestamp(dayId)) {
-        groups.push(createGroup(gapDayId, []));
-        gapDayId = previousDayId(gapDayId);
+      if (previousDayId(missingDayId) === dayId) {
+        groups.push(createGroup(missingDayId, []));
       }
     }
 
