@@ -23,6 +23,7 @@ export const TableRow = <Row,>({ columns, row }: TableRowProps<Row>) => {
           </BaseTable.Cell>
         );
       })}
+      <BaseTable.Cell />
     </BaseTable.Row>
   );
 };

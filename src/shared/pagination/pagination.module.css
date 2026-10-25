@@ -1,0 +1,19 @@
+.root {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--app-space-4);
+  flex-wrap: wrap;
+}
+
+.pageSize {
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-2);
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-3);
+}

@@ -1,0 +1,10 @@
+.search {
+  flex: 1 1 18rem;
+  max-width: 32rem;
+}
+
+.field {
+  display: grid;
+  gap: var(--app-space-1);
+  min-width: 9rem;
+}

@@ -68,7 +68,7 @@ export type Filters = {
 export type EventsRequest = {
   page: number;
   pageSize: PageSize;
-  sort: Sort;
+  sort?: Sort;
   filters: Filters;
 };
 

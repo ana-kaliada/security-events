@@ -71,9 +71,12 @@ export const getEvents = (
     matchesFilters(event, request.filters),
   );
 
-  matchingEvents.sort((previous, next) =>
-    compareEvents(previous, next, request.sort),
-  );
+  if (request.sort) {
+    const sort = request.sort;
+    matchingEvents.sort((previous, next) =>
+      compareEvents(previous, next, sort),
+    );
+  }
 
   const pageSize = Number(request.pageSize);
   const page = Math.max(1, request.page);
