@@ -1,48 +1,15 @@
 import { Button, Flex, Text, TextField } from '@radix-ui/themes';
 import { useId } from 'react';
-import { SearchInput } from '../../../../shared/search-input';
-import { SelectField } from '../../../../shared/select-field';
-import {
-  severities,
-  sites,
-  sources,
-  type Filters,
-} from '../../../../worker/protocol.ts';
+import { SearchInput } from '../../../../shared/components/search-input';
+import { SelectField } from '../../../../shared/components/select-field';
+import { formatLocalDate } from '../../../../shared/utils/format-local-date.ts';
 import styles from './event-filters.module.css';
-
-export type EventFiltersValue = Omit<Filters, 'title'>;
-
-type EventFiltersProps = {
-  title: string;
-  value: EventFiltersValue;
-  onTitleChange: (value: string) => void;
-  onChange: (value: EventFiltersValue) => void;
-};
-
-const severityOptions = severities.map((severity) => ({
-  label: severity,
-  value: severity,
-}));
-
-const sourceOptions = sources.map((source) => ({
-  label: source,
-  value: source,
-}));
-
-const siteOptions = sites.map((site) => ({
-  label: site,
-  value: site,
-}));
-
-const formatDateInput = (timestamp?: number) => {
-  if (timestamp === undefined) return '';
-
-  const date = new Date(timestamp);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-};
+import {
+  type EventFiltersProps,
+  severityOptions,
+  siteOptions,
+  sourceOptions,
+} from './event-filters.types.ts';
 
 export const EventFilters = ({
   title,
@@ -97,7 +64,11 @@ export const EventFilters = ({
         <TextField.Root
           id={dateId}
           type="date"
-          value={formatDateInput(value.occurredAt)}
+          value={
+            value.occurredAt === undefined
+              ? ''
+              : formatLocalDate(value.occurredAt)
+          }
           onChange={(event) =>
             onChange({
               ...value,
