@@ -12,10 +12,34 @@ type MutableTimelineGroup = {
   items: EventRecord[];
 };
 
+const dayTimestamp = (dayId: string) => {
+  const [year, month, day] = dayId.split('-').map(Number);
+
+  return new Date(year, month - 1, day).getTime();
+};
+
+const previousDayId = (dayId: string) => {
+  const date = new Date(dayTimestamp(dayId));
+
+  date.setDate(date.getDate() - 1);
+
+  return formatLocalDate(date.getTime());
+};
+
+const createGroup = (
+  dayId: string,
+  items: EventRecord[],
+): MutableTimelineGroup => ({
+  id: dayId,
+  label: dateFormatter.format(dayTimestamp(dayId)),
+  items,
+});
+
 export const groupEventsByDay = (
   events: readonly EventRecord[],
 ): readonly TimelineGroup<EventRecord>[] => {
   const groups: MutableTimelineGroup[] = [];
+  let previousEventDayId: string | undefined;
 
   events.forEach((event) => {
     const dayId = formatLocalDate(event.occurredAt);
@@ -26,11 +50,17 @@ export const groupEventsByDay = (
       return;
     }
 
-    groups.push({
-      id: dayId,
-      label: dateFormatter.format(event.occurredAt),
-      items: [event],
-    });
+    if (previousEventDayId) {
+      let gapDayId = previousDayId(previousEventDayId);
+
+      while (dayTimestamp(gapDayId) > dayTimestamp(dayId)) {
+        groups.push(createGroup(gapDayId, []));
+        gapDayId = previousDayId(gapDayId);
+      }
+    }
+
+    groups.push(createGroup(dayId, [event]));
+    previousEventDayId = dayId;
   });
 
   return groups;

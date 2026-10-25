@@ -15,8 +15,14 @@ const timeFormatter = new Intl.DateTimeFormat('en', {
 
 const getEventKey = (event: EventRecord) => event.id;
 
+const getEventLabel = (event: EventRecord) =>
+  `${timeFormatter.format(event.occurredAt)}, ${event.title}, ${event.severity}, ${event.source}, ${event.site}`;
+
 const renderEventTime = (event: EventRecord) => (
-  <time className={styles.time} dateTime={new Date(event.occurredAt).toISOString()}>
+  <time
+    className={styles.time}
+    dateTime={new Date(event.occurredAt).toISOString()}
+  >
     {timeFormatter.format(event.occurredAt)}
   </time>
 );
@@ -70,6 +76,7 @@ export const EventsTimeline = () => {
     <Timeline
       groups={groups}
       getItemKey={getEventKey}
+      getItemLabel={getEventLabel}
       renderItem={renderEvent}
       renderOppositeContent={renderEventTime}
       isLoading={!workerError && !events && !errorMessage}

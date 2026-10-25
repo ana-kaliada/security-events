@@ -1,17 +1,12 @@
-import type { ReactNode, ToggleEvent } from 'react';
+import type { PointerEvent, ToggleEvent } from 'react';
 import styles from './timeline-group.module.css';
-
-type TimelineGroupProps = {
-  label: ReactNode;
-  itemCount: number;
-  isOpen: boolean;
-  onOpenChange: (isOpen: boolean) => void;
-};
+import type { TimelineGroupProps } from './timeline-group.types.ts';
 
 export const TimelineGroup = ({
   label,
   itemCount,
   isOpen,
+  onActivate,
   onOpenChange,
 }: TimelineGroupProps) => {
   const handleToggle = (event: ToggleEvent<HTMLDetailsElement>) => {
@@ -22,9 +17,18 @@ export const TimelineGroup = ({
     }
   };
 
+  const handlePointerDown = (event: PointerEvent<HTMLElement>) => {
+    event.preventDefault();
+    onActivate();
+  };
+
   return (
     <details className={styles.card} open={isOpen} onToggle={handleToggle}>
-      <summary className={styles.summary}>
+      <summary
+        className={styles.summary}
+        tabIndex={-1}
+        onPointerDown={handlePointerDown}
+      >
         <h2 className={styles.label}>{label}</h2>
         <span className={styles.count}>
           {itemCount} {itemCount === 1 ? 'event' : 'events'}

@@ -1,10 +1,5 @@
 import styles from './timeline-message.module.css';
-
-type TimelineMessageProps = {
-  isLoading?: boolean;
-  emptyMessage?: string;
-  errorMessage?: string;
-};
+import type { TimelineMessageProps } from './timeline-message.types.ts';
 
 export const TimelineMessage = ({
   isLoading = false,

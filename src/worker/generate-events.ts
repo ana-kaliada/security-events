@@ -103,6 +103,24 @@ if (SCENARIO_POOL.length !== 100) {
   throw new Error('Scenario weights must add up to 100');
 }
 
+const TIMELINE_DAY_EVENT_COUNTS = [
+  180, 2, 0, 2, 5867, 2, 35, 2, 900, 14, 2, 60, 8, 700, 25, 3, 450, 11, 120, 6,
+  280, 18, 90, 4, 160, 22, 55, 9, 210, 16, 40, 7, 130, 12, 75, 5, 95, 20, 48,
+  10, 110, 15, 65, 30, 85,
+] as const;
+
+const timelineDayEventCount = TIMELINE_DAY_EVENT_COUNTS.reduce(
+  (total, count) => total + count,
+  0,
+);
+
+if (
+  TIMELINE_DAY_EVENT_COUNTS.length !== DATASET.timelineDays ||
+  timelineDayEventCount !== DATASET.timelineCount
+) {
+  throw new Error('Timeline day distribution must cover every timeline event');
+}
+
 const EVENT_COUNT = DATASET.archiveCount + DATASET.timelineCount;
 const MINUTES_IN_DAY = 24 * 60;
 const BUSINESS_MINUTES =
@@ -128,13 +146,32 @@ const getMinuteOfDay = (seed: number): number => {
     : DATASET.businessDay.endHour * 60 + offset - morningMinutes;
 };
 
+const getTimelineDaysAgo = (timelineIndex: number) => {
+  let remaining = timelineIndex;
+
+  for (
+    let daysAgo = 0;
+    daysAgo < TIMELINE_DAY_EVENT_COUNTS.length;
+    daysAgo += 1
+  ) {
+    const count = TIMELINE_DAY_EVENT_COUNTS[daysAgo];
+
+    if (remaining < count) return daysAgo;
+
+    remaining -= count;
+  }
+
+  throw new Error('Timeline event is outside the day distribution');
+};
+
 const getOccurredAt = (index: number): number => {
   const isTimelineEvent = index >= DATASET.archiveCount;
-  const span = isTimelineEvent ? DATASET.timelineDays : DATASET.archiveDays;
-  const maxDaysAgo = isTimelineEvent
-    ? DATASET.timelineDays - 1
-    : DATASET.timelineDays + DATASET.archiveDays - 1;
-  const daysAgo = maxDaysAgo - (deterministicNumber(index, 4_000_003) % span);
+  const daysAgo = isTimelineEvent
+    ? getTimelineDaysAgo(index - DATASET.archiveCount)
+    : DATASET.timelineDays +
+      DATASET.archiveDays -
+      1 -
+      (deterministicNumber(index, 4_000_003) % DATASET.archiveDays);
   const minutes = getMinuteOfDay(deterministicNumber(index, 2_000_003));
   const date = new Date(...DATASET.anchorDate);
 

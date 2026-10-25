@@ -9,6 +9,7 @@ export type TimelineGroup<Item> = {
 export type TimelineProps<Item> = {
   groups: readonly TimelineGroup<Item>[];
   getItemKey: (item: Item) => Key;
+  getItemLabel: (item: Item) => string;
   renderItem: (item: Item) => ReactNode;
   renderOppositeContent?: (item: Item) => ReactNode;
   isLoading?: boolean;
@@ -31,3 +32,13 @@ export type TimelineItemRow<Item> = {
 };
 
 export type TimelineRow<Item> = TimelineGroupRow<Item> | TimelineItemRow<Item>;
+
+export type TimelineCursor = {
+  groupId: string;
+  itemIndex: number | null;
+};
+
+export type TimelineNavigation = {
+  cursor: TimelineCursor;
+  expandedGroupId: string | null;
+};

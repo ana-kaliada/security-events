@@ -4,6 +4,15 @@
   overflow: auto;
 }
 
+.viewport:focus {
+  outline: none;
+}
+
+.viewport:focus-within .row[data-active='true'] {
+  z-index: 1;
+  box-shadow: inset 0 0 0 2px var(--accent-9);
+}
+
 .content {
   position: relative;
   width: 100%;
@@ -14,4 +23,16 @@
   top: 0;
   left: 0;
   width: 100%;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

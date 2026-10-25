@@ -1,11 +1,19 @@
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import type { KeyboardEvent } from 'react';
 import { TimelineGroup } from './components/timeline-group/timeline-group.tsx';
 import { TimelineMessage } from './components/timeline-message/timeline-message.tsx';
 import { TimelineRow } from './components/timeline-row/timeline-row.tsx';
 import { TimelineViewport } from './components/timeline-viewport/timeline-viewport.tsx';
 import { createTimelineRows } from './timeline-create-rows.ts';
-import type { TimelineProps } from './timeline.types.ts';
+import {
+  findTimelineCursorIndex,
+  getTimelineAnnouncement,
+  getTimelineNavigation,
+  isTimelineKey,
+  resolveTimelineCursor,
+} from './timeline-navigation.ts';
+import type { TimelineCursor, TimelineProps } from './timeline.types.ts';
 
 const GROUP_HEADER_HEIGHT = 64;
 const ITEM_HEIGHT = 72;
@@ -13,6 +21,7 @@ const ITEM_HEIGHT = 72;
 export const Timeline = <Item,>({
   groups,
   getItemKey,
+  getItemLabel,
   renderItem,
   renderOppositeContent,
   isLoading = false,
@@ -20,21 +29,94 @@ export const Timeline = <Item,>({
   errorMessage,
 }: TimelineProps<Item>) => {
   const viewportRef = useRef<HTMLDivElement>(null);
+  const previousExpandedGroupIdRef = useRef<string | null>(null);
+  const skipFocusAnnouncementRef = useRef(false);
+  const [cursor, setCursor] = useState<TimelineCursor | null>(null);
   const [expandedGroupId, setExpandedGroupId] = useState<string | null>(null);
+  const [announcement, setAnnouncement] = useState('');
+  const resolvedCursor = useMemo(
+    () => resolveTimelineCursor(groups, cursor, expandedGroupId),
+    [cursor, expandedGroupId, groups],
+  );
   const rows = useMemo(
     () => createTimelineRows(groups, getItemKey, expandedGroupId),
     [expandedGroupId, getItemKey, groups],
   );
+  const activeIndex = resolvedCursor
+    ? findTimelineCursorIndex(rows, resolvedCursor)
+    : -1;
 
-  const handleGroupOpenChange = useCallback((groupId: string, isOpen: boolean) => {
-    setExpandedGroupId((current) => {
-      if (isOpen) {
-        return groupId;
+  const announce = useCallback(
+    (nextCursor: TimelineCursor, nextExpandedGroupId: string | null) => {
+      setAnnouncement(
+        getTimelineAnnouncement(
+          groups,
+          nextCursor,
+          nextExpandedGroupId,
+          getItemLabel,
+        ),
+      );
+    },
+    [getItemLabel, groups],
+  );
+
+  const handleGroupOpenChange = useCallback(
+    (groupId: string, isOpen: boolean) => {
+      const nextCursor = { groupId, itemIndex: null };
+      const nextExpandedGroupId = isOpen ? groupId : null;
+
+      setExpandedGroupId((current) => {
+        if (isOpen) return groupId;
+
+        return current === groupId ? null : current;
+      });
+      setCursor(nextCursor);
+
+      if (viewportRef.current === document.activeElement) {
+        announce(nextCursor, nextExpandedGroupId);
       }
+    },
+    [announce],
+  );
 
-      return current === groupId ? null : current;
-    });
+  const handleGroupActivate = useCallback((groupId: string) => {
+    skipFocusAnnouncementRef.current = true;
+    setCursor({ groupId, itemIndex: null });
+    viewportRef.current?.focus();
   }, []);
+
+  const handleViewportFocus = useCallback(() => {
+    if (skipFocusAnnouncementRef.current) {
+      skipFocusAnnouncementRef.current = false;
+      return;
+    }
+
+    if (!resolvedCursor) return;
+
+    announce(resolvedCursor, expandedGroupId);
+  }, [announce, expandedGroupId, resolvedCursor]);
+
+  const handleViewportKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLDivElement>) => {
+      if (!resolvedCursor || !isTimelineKey(event.key)) return;
+
+      event.preventDefault();
+
+      const navigation = getTimelineNavigation(
+        groups,
+        resolvedCursor,
+        expandedGroupId,
+        event.key,
+      );
+
+      if (!navigation) return;
+
+      setCursor(navigation.cursor);
+      setExpandedGroupId(navigation.expandedGroupId);
+      announce(navigation.cursor, navigation.expandedGroupId);
+    },
+    [announce, expandedGroupId, groups, resolvedCursor],
+  );
 
   // TanStack Virtual intentionally exposes mutable measurement methods.
   // eslint-disable-next-line react-hooks/incompatible-library
@@ -48,16 +130,21 @@ export const Timeline = <Item,>({
   });
 
   useLayoutEffect(() => {
-    if (!expandedGroupId) return;
+    if (activeIndex < 0) return;
 
-    const index = rows.findIndex(
-      (row) => row.type === 'group' && row.group.id === expandedGroupId,
-    );
+    const previousExpandedGroupId = previousExpandedGroupIdRef.current;
+    previousExpandedGroupIdRef.current = expandedGroupId;
+    const row = rows[activeIndex];
+    const openedGroupHeader =
+      expandedGroupId !== null &&
+      expandedGroupId !== previousExpandedGroupId &&
+      row?.type === 'group' &&
+      row.group.id === expandedGroupId;
 
-    if (index >= 0) {
-      virtualizer.scrollToIndex(index, { align: 'start' });
-    }
-  }, [expandedGroupId, rows, virtualizer]);
+    virtualizer.scrollToIndex(activeIndex, {
+      align: openedGroupHeader ? 'start' : 'auto',
+    });
+  }, [activeIndex, expandedGroupId, rows, virtualizer]);
 
   if (isLoading || errorMessage || groups.length === 0) {
     return (
@@ -71,10 +158,14 @@ export const Timeline = <Item,>({
 
   return (
     <TimelineViewport
+      activeIndex={activeIndex}
+      announcement={announcement}
       items={virtualizer.getVirtualItems()}
       measureElement={virtualizer.measureElement}
       totalSize={virtualizer.getTotalSize()}
       viewportRef={viewportRef}
+      onFocus={handleViewportFocus}
+      onKeyDown={handleViewportKeyDown}
     >
       {(virtualRow) => {
         const row = rows[virtualRow.index];
@@ -89,6 +180,7 @@ export const Timeline = <Item,>({
               isOpen={row.group.id === expandedGroupId}
               itemCount={row.group.items.length}
               label={row.group.label}
+              onActivate={() => handleGroupActivate(row.group.id)}
               onOpenChange={(nextOpen) =>
                 handleGroupOpenChange(row.group.id, nextOpen)
               }
