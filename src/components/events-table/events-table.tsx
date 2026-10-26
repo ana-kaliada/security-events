@@ -15,12 +15,10 @@ export const EventsTable = () => {
   const {
     request,
     sort,
-    filterValue,
     onSortChange,
     onPageChange,
     onPageSizeChange,
     onFiltersChange,
-    onTitleChange,
   } = useEventsTableControls();
   const { status: workerStatus, isReady: isWorkerReady } = useWorkerStatus();
   const debouncedTitle = useDebouncedValue(
@@ -49,12 +47,7 @@ export const EventsTable = () => {
 
   return (
     <>
-      <EventFilters
-        title={request.filters.title ?? ''}
-        value={filterValue}
-        onTitleChange={onTitleChange}
-        onChange={onFiltersChange}
-      />
+      <EventFilters value={request.filters} onChange={onFiltersChange} />
       <Table
         caption="Security events"
         columns={columns}

@@ -2,23 +2,18 @@ import { Button, Flex } from '@radix-ui/themes';
 import { DateField } from '../../shared/components/date-field';
 import { SearchInput } from '../../shared/components/search-input';
 import { SelectField } from '../../shared/components/select-field';
-import { formatLocalDate } from '../../shared/utils/format-local-date.ts';
-import styles from './event-filters.module.css';
 import {
-  type EventFiltersProps,
   severityOptions,
   siteOptions,
   sourceOptions,
-} from './event-filters.types.ts';
+} from '../../shared/libs/event-options.ts';
+import { formatLocalDate } from '../../shared/utils/format-local-date.ts';
+import styles from './event-filters.module.css';
+import type { EventFiltersProps } from './event-filters.types.ts';
 
-export const EventFilters = ({
-  title,
-  value,
-  onTitleChange,
-  onChange,
-}: EventFiltersProps) => {
+export const EventFilters = ({ value, onChange }: EventFiltersProps) => {
   const hasActiveFilters = Object.values(value).some(
-    (filterValue) => filterValue !== undefined,
+    (filterValue) => filterValue !== undefined && filterValue !== '',
   );
 
   return (
@@ -28,8 +23,10 @@ export const EventFilters = ({
           label="Title"
           type="search"
           placeholder="Search by title"
-          value={title}
-          onChange={onTitleChange}
+          value={value.title ?? ''}
+          onChange={(title) =>
+            onChange({ ...value, title: title || undefined }, { replace: true })
+          }
         />
       </div>
 

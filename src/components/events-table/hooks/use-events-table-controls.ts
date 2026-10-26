@@ -1,6 +1,9 @@
 import type { TableSort } from '../../../shared/components/table';
-import { pageSizes, type SortBy } from '../../../worker/protocol.ts';
-import type { EventFiltersValue } from '../../event-filters/event-filters.types.ts';
+import {
+  pageSizes,
+  type Filters,
+  type SortBy,
+} from '../../../worker/protocol.ts';
 import { useEventsSearchParams } from './use-events-search-params.ts';
 
 export const useEventsTableControls = () => {
@@ -29,28 +32,17 @@ export const useEventsTableControls = () => {
     }));
   };
 
-  const onFiltersChange = (filters: EventFiltersValue) => {
-    updateRequest((currentRequest) => ({
-      ...currentRequest,
-      page: 1,
-      filters: {
-        title: currentRequest.filters.title,
-        ...filters,
-      },
-    }));
-  };
-
-  const onTitleChange = (title: string) => {
+  const onFiltersChange = (
+    filters: Filters,
+    options?: { replace?: boolean },
+  ) => {
     updateRequest(
       (currentRequest) => ({
         ...currentRequest,
         page: 1,
-        filters: {
-          ...currentRequest.filters,
-          title: title || undefined,
-        },
+        filters,
       }),
-      { replace: true },
+      options,
     );
   };
 
@@ -59,16 +51,9 @@ export const useEventsTableControls = () => {
   return {
     request,
     sort,
-    filterValue: {
-      severity: request.filters.severity,
-      source: request.filters.source,
-      site: request.filters.site,
-      occurredAt: request.filters.occurredAt,
-    },
     onSortChange,
     onPageChange,
     onPageSizeChange,
     onFiltersChange,
-    onTitleChange,
   };
 };
