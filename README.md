@@ -1,75 +1,45 @@
-# React + TypeScript + Vite
+# Events
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React app with a paginated event grid and a virtualized timeline. 
+All data is generated in a Web Worker: 90,000 archive rows and 10,000 timeline events. 
+There is no backend.
 
-Currently, two official plugins are available:
+## Run
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+npm install
+npm run dev
 
-## React Compiler
+Open `/events` for the grid and `/timeline` for the timeline.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Data
 
-## Expanding the ESLint configuration
+Filtering and sorting run in the worker, so the page stays responsive with 100,000 records. 
+The timeline keeps the last 10,000 generated records, plus events created in the session. 
+A new event is added to both lists. 
+An edit updates that same record where it already lives.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Grid
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Pagination and sorting belong to the shared table. 
+Event filters sit beside it, because they describe this list's query. 
+The filters, sort, and page are stored in the URL. The title filter is debounced.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Timeline
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Events are grouped by day in one virtual list, so 10,000 cards stay scrollable. 
+Day groups start collapsed. 
+Arrow keys move through days and events, Enter or Space toggles a day, and the current item is announced for screen readers. 
+An empty day appears only when exactly one calendar day is missing.
 
-```
+## Create and edit
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+The form asks for a title and a date. 
+The time is stamped when the event is saved. 
+Title and date are required, the other fields have defaults.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Stack
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
-```
+React and TypeScript on Vite. React Router stores the grid filters, sort, and page in the URL. 
+Radix Themes provides the controls and the dialog: its components already handle focus, keyboard interaction, and labeling. 
+React Hook Form and Yup validate the form and move focus to the first invalid field. 
+TanStack Virtual renders only the visible part of the timeline.
