@@ -95,7 +95,7 @@ export type WorkerRequest = WorkerCommand & { requestId: number };
 
 export type WorkerResponse =
   | { type: 'READY' }
-  | { type: 'ERROR'; message: string }
+  | { type: 'ERROR'; message: string; requestId?: number }
   | { type: 'GET_EVENTS'; requestId: number; data: EventsResult }
   | {
       type: 'GET_TIMELINE_EVENTS';

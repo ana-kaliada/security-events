@@ -22,7 +22,7 @@ export const EventsTable = () => {
     onFiltersChange,
     onTitleChange,
   } = useEventsTableControls();
-  const { isReady: isWorkerReady } = useWorkerStatus();
+  const { status: workerStatus, isReady: isWorkerReady } = useWorkerStatus();
   const debouncedTitle = useDebouncedValue(
     request.filters.title,
     SEARCH_DEBOUNCE_MS,
@@ -37,6 +37,8 @@ export const EventsTable = () => {
     },
     isWorkerReady,
   );
+  const workerError =
+    workerStatus === 'error' ? 'Worker failed to initialize' : undefined;
 
   useEffect(() => {
     if (!data || data.total === 0) return;
@@ -58,9 +60,9 @@ export const EventsTable = () => {
         columns={columns}
         data={data?.rows ?? []}
         getRowKey={(event) => event.id}
-        isLoading={isLoading}
+        isLoading={!workerError && isLoading}
         emptyMessage="No events found"
-        errorMessage={error?.message}
+        errorMessage={workerError ?? error?.message}
         sort={sort}
         onSortChange={onSortChange}
         renderRowActions={(event) => (

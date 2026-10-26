@@ -27,40 +27,50 @@ try {
   self.addEventListener('message', (event: MessageEvent<WorkerRequest>) => {
     const request = event.data;
 
-    switch (request.type) {
-      case 'GET_EVENTS':
-        return post({
-          type: request.type,
-          requestId: request.requestId,
-          data: getEvents(records, request),
-        });
-      case 'GET_TIMELINE_EVENTS':
-        timelineRecords.sort(
-          (first, second) => second.occurredAt - first.occurredAt,
-        );
+    try {
+      switch (request.type) {
+        case 'GET_EVENTS':
+          return post({
+            type: request.type,
+            requestId: request.requestId,
+            data: getEvents(records, request),
+          });
+        case 'GET_TIMELINE_EVENTS':
+          timelineRecords.sort(
+            (first, second) => second.occurredAt - first.occurredAt,
+          );
 
-        return post({
-          type: request.type,
-          requestId: request.requestId,
-          data: timelineRecords,
-        });
-      case 'CREATE_EVENT':
-        return post({
-          type: request.type,
-          requestId: request.requestId,
-          data: createEventRecord(
-            records,
-            timelineRecords,
-            request.event,
-            createEventId(),
-          ),
-        });
-      case 'UPDATE_EVENT':
-        return post({
-          type: request.type,
-          requestId: request.requestId,
-          data: updateEventRecord(records, request.id, request.event),
-        });
+          return post({
+            type: request.type,
+            requestId: request.requestId,
+            data: timelineRecords,
+          });
+        case 'CREATE_EVENT':
+          return post({
+            type: request.type,
+            requestId: request.requestId,
+            data: createEventRecord(
+              records,
+              timelineRecords,
+              request.event,
+              createEventId(),
+            ),
+          });
+        case 'UPDATE_EVENT':
+          return post({
+            type: request.type,
+            requestId: request.requestId,
+            data: updateEventRecord(records, request.id, request.event),
+          });
+      }
+    } catch (e) {
+      const message = e instanceof Error ? e.message : 'Request failed';
+
+      post({
+        type: 'ERROR',
+        requestId: request.requestId,
+        message,
+      });
     }
   });
 

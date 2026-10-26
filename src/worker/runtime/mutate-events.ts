@@ -19,8 +19,11 @@ export const updateEventRecord = (
   id: string,
   event: EventInput,
 ) => {
-  const currentIndex = records.findIndex((item) => item.id === id);
-  const record = records[currentIndex];
+  const record = records.find((item) => item.id === id);
+
+  if (!record) {
+    throw new Error('Event not found');
+  }
 
   Object.assign(record, event);
 

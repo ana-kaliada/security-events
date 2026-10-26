@@ -32,6 +32,11 @@ const handleWorkerMessage = (event: MessageEvent<WorkerResponse>) => {
       setWorkerStatus('ready');
       return;
     case 'ERROR':
+      if (response.requestId !== undefined) {
+        pendingRequests.reject(response.requestId, new Error(response.message));
+        return;
+      }
+
       failWorker(response.message);
       return;
     case 'GET_EVENTS':
